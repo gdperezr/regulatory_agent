@@ -335,11 +335,6 @@ if pergunta := st.chat_input("✍️ Faça sua pergunta sobre o SCR 3040:"):
                     "content": erro_msg
                 })
 
-st.markdown("---")
-st.markdown("### 🔗 Links Úteis")
-col1, col2 = st.columns(2)
-with col1:
-    st.markdown("🔗 [Manual SCR 3040 - Banco Central](https://www.bcb.gov.br/estabilidadefinanceira/scr)")
-with col2:
-    st.markdown("🔗 [Perguntas Frequentes SCR](https://www.bcb.gov.br/estabilidadefinanceira/perguntasfrequentes)")
 
+
+# rodar streamlit run agente/app_melhorado.py

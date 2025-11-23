@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Doc3040 CNPJ="12345678" DtBase="2025-05" EmailResp="gabriel.perez@bancoexemplo.com.br" MetodApPE="C" MetodDifTJE="N" NomeResp="GABRIEL PEREZ" Parte="1" Remessa="1" TelResp="3133334444" TotalCli="4" TpArq="F">
+  <Cli Autorzc="N" Cd="00000123456" FatAnual="150000.00" IniRelactCli="2023-01-15" PorteCli="4" Tp="1">
+    <Op CaracEspecial="19" CEP="30190131" Contrt="002023001" DiaAtraso="0" DtaProxParcela="2025-06-15" DtContr="2023-01-15" DtVencOp="2028-01-15" Indx="11" IPOC="123456780299100000123456002023001" Mod="0299" NatuOp="01" OrigemRec="0199" PercIndx="0.00" ProvConsttd="15000.00" QtdParcelas="60" TaxEft="18.50" VarCamb="0" VlrContr="50000.00" VlrProxParcela="1450.00">
+      <Venc v130="0.00" v140="0.00" v150="0.00" v160="0.00" v165="0.00" v170="0.00" v175="0.00" v180="50000.00" v190="0.00" v210="0.00" v220="0.00" v230="0.00" v240="0.00" v245="0.00" v250="0.00" v255="0.00" v260="0.00"/>
+      <Gar DtReav="2024-12-31" Tp="0427" VlrData="60000.00" VlrOrig="55000.00"/>
+      <Inf Tp="2409"/>
+      <ContInstFinRes4966 CartProvMin="C1" ClasAtFin="1" EstInstFin="3" TJE="18.50" VlrContBr="48000.00" VlrPerdaAcum="2.50"/>
+    </Op>
+  </Cli>
+
+  <Cli Autorzc="S" Cd="00000765432" FatAnual="320000.00" IniRelactCli="2022-07-01" PorteCli="5" Tp="1">
+    <Op CaracEspecial="11" CEP="30140110" Contrt="002022010" DiaAtraso="45" DtaProxParcela="2025-05-30" DtContr="2022-07-01" DtVencOp="2030-07-01" Indx="11" IPOC="123456780299100000765432002022010" Mod="0299" NatuOp="01" OrigemRec="0199" PercIndx="0.00" ProvConsttd="75000.00" QtdParcelas="96" TaxEft="21.35" VarCamb="0" VlrContr="200000.00" VlrProxParcela="3250.00">
+      <Venc v130="5000.00" v140="8000.00" v150="16000.00" v160="32000.00" v165="16000.00" v170="16000.00" v175="8000.00" v180="50000.00" v190="25000.00" v210="5000.00" v220="5000.00" v230="5000.00" v240="5000.00" v245="5000.00" v250="5000.00" v255="10000.00" v260="5000.00"/>
+      <Gar DtReav="2025-03-31" Tp="0426" VlrData="250000.00" VlrOrig="220000.00"/>
+      <Inf Tp="2409"/>
+      <ContInstFinRes4966 CartProvMin="C2" ClasAtFin="2" EstInstFin="2" TJE="21.35" VlrContBr="180000.00" VlrPerdaAcum="5.00"/>
+    </Op>
+    <Op CaracEspecial="19" CEP="30140110" Contrt="002023050" DiaAtraso="0" DtaProxParcela="2025-05-25" DtContr="2023-05-25" DtVencOp="2026-05-25" Indx="11" IPOC="123456780299100000765432002023050" Mod="0299" NatuOp="01" OrigemRec="0199" PercIndx="0.00" ProvConsttd="5000.00" QtdParcelas="36" TaxEft="26.10" VarCamb="0" VlrContr="30000.00" VlrProxParcela="1200.00">
+      <Venc v130="0.00" v140="0.00" v150="6000.00" v160="6000.00" v165="6000.00" v170="6000.00" v175="0.00" v180="6000.00" v190="0.00" v210="0.00" v220="0.00" v230="0.00" v240="0.00" v245="0.00" v250="0.00" v255="0.00" v260="0.00"/>
+      <Gar DtReav="2025-01-31" Tp="0427" VlrData="35000.00" VlrOrig="32000.00"/>
+      <Inf Tp="2409"/>
+      <ContInstFinRes4966 CartProvMin="C1" ClasAtFin="1" EstInstFin="1" TJE="26.10" VlrContBr="28000.00" VlrPerdaAcum="1.25"/>
+    </Op>
+  </Cli>
+
+  <Cli Autorzc="N" Cd="00000999999" FatAnual="50000.00" IniRelactCli="2024-03-10" PorteCli="3" Tp="2">
+    <Op CaracEspecial="21" CEP="31500000" Contrt="002024777" DiaAtraso="10" DtaProxParcela="2025-05-20" DtContr="2024-03-10" DtVencOp="2025-12-10" Indx="11" IPOC="123456780299100000999999002024777" Mod="0299" NatuOp="01" OrigemRec="0199" PercIndx="0.00" ProvConsttd="2500.00" QtdParcelas="24" TaxEft="32.90" VarCamb="0" VlrContr="10000.00" VlrProxParcela="550.00">
+      <Venc v130="1000.00" v140="2000.00" v150="3000.00" v160="4000.00" v165="0.00" v170="0.00" v175="0.00" v180="0.00" v190="0.00" v210="0.00" v220="0.00" v230="0.00" v240="0.00" v245="0.00" v250="0.00" v255="0.00" v260="0.00"/>
+      <Gar DtReav="2025-02-28" Tp="0426" VlrData="15000.00" VlrOrig="12000.00"/>
+      <Inf Tp="2409"/>
+      <ContInstFinRes4966 CartProvMin="C3" ClasAtFin="3" EstInstFin="2" TJE="32.90" VlrContBr="9500.00" VlrPerdaAcum="3.75"/>
+    </Op>
+  </Cli>
+
+  <Cli Autorzc="S" Cd="00000888888" FatAnual="900000.00" IniRelactCli="2020-09-01" PorteCli="6" Tp="1">
+    <Op CaracEspecial="19" CEP="30200000" Contrt="002020123" DiaAtraso="120" DtaProxParcela="2025-05-30" DtContr="2020-09-01" DtVencOp="2035-09-01" Indx="11" IPOC="123456780299100000888888002020123" Mod="0299" NatuOp="01" OrigemRec="0199" PercIndx="0.00" ProvConsttd="250000.00" QtdParcelas="180" TaxEft="19.75" VarCamb="0" VlrContr="800000.00" VlrProxParcela="9000.00">
+      <Venc v130="10000.00" v140="15000.00" v150="30000.00" v160="60000.00" v165="60000.00" v170="60000.00" v175="30000.00" v180="150000.00" v190="80000.00" v210="15000.00" v220="15000.00" v230="15000.00" v240="15000.00" v245="15000.00" v250="15000.00" v255="20000.00" v260="10000.00"/>
+      <Gar DtReav="2025-04-30" Tp="0427" VlrData="900000.00" VlrOrig="850000.00"/>
+      <Gar DtReav="2025-04-30" Tp="0426" VlrData="500000.00" VlrOrig="480000.00"/>
+      <Inf Tp="2409"/>
+      <ContInstFinRes4966 CartProvMin="C1" ClasAtFin="1" EstInstFin="3" TJE="19.75" VlrContBr="780000.00" VlrPerdaAcum="4.00"/>
+    </Op>
+  </Cli>
+</Doc3040>

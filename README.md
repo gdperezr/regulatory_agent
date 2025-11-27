@@ -9,6 +9,7 @@
 Trabalho apresentado ao curso [BI MASTER](https://ica.puc-rio.ai/bi-master) como pré-requisito para conclusão de curso.
 
 - [Link para o código](agente/app_melhorado.py)
+- [Link para o código Github](https://github.com/gdperezr/regulatory_agent)
 
 ---
 
@@ -72,6 +73,23 @@ O sistema foi implementado e testado com sucesso, demonstrando capacidade de:
 5. **Performance**: O cache do vectorstore e a otimização da busca MMR garantem tempos de resposta adequados mesmo com grandes volumes de documentos.
 
 O sistema foi validado através de perguntas sobre estrutura XML, atributos obrigatórios, regras de preenchimento e exemplos práticos, demonstrando capacidade de fornecer informações precisas e úteis para profissionais do setor financeiro.
+
+
+### Exemplos de uso do agente SCR 3040
+### Rodando o Código
+![Rodando o Código](agente/imagem/1_Rodando_codigo.png)
+### Interface principal
+![Interface principal](agente/imagem/interface_principal.png)
+### Perguntas ao Agente a respeito do tema 3040
+![Pergunta1](agente/imagem/tela1_oque_e.png)
+
+![Pergunta2](agente/imagem/tela2_mais_detalhe.png)
+
+![Pergunta3](agente/imagem/3_pergunta.png)
+
+![Pergunta4](agente/imagem/4_pergunta.png)
+
+![Pergunta5](agente/imagem/5_pergunta.png)
 
 ### 4. Conclusões
 

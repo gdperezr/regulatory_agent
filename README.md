@@ -15,11 +15,11 @@ Trabalho apresentado ao curso [BI MASTER](https://ica.puc-rio.ai/bi-master) como
 
 ### Resumo
 
-Este trabalho apresenta o desenvolvimento de um agente inteligente baseado em técnicas de Retrieval Augmented Generation (RAG) para auxiliar profissionais do setor financeiro no preenchimento e compreensão do documento SCR 3040 do Banco Central do Brasil. O sistema processa múltiplos formatos de documentos (PDF, XLS e XML), utilizando embeddings semânticos e modelos de linguagem de grande escala (LLM) para fornecer respostas precisas e contextualizadas sobre a estrutura, tags XML, atributos e regras de preenchimento do documento. A solução implementada utiliza a biblioteca LangChain para orquestração, FAISS para armazenamento vetorial eficiente, e GPT-4o-mini da OpenAI como modelo de linguagem. A interface web foi desenvolvida em Streamlit, proporcionando uma experiência de usuário intuitiva e acessível. O sistema demonstra eficácia na recuperação de informações relevantes e na geração de respostas contextualizadas, contribuindo para a redução de erros no preenchimento de documentos regulatórios e para o aumento da produtividade dos profissionais envolvidos.
+Este trabalho apresenta o desenvolvimento de um agente inteligente baseado em técnicas de Retrieval Augmented Generation (RAG) para auxiliar profissionais do setor financeiro no preenchimento e compreensão do documento SCR 3040 do Banco Central do Brasil. O sistema processa múltiplos formatos de documentos (PDF, XLS e XML), utilizando embeddings semânticos e modelos de linguagem de grande escala (LLM) para fornecer respostas precisas e contextualizadas sobre a estrutura, tags XML, atributos e regras de preenchimento do documento. A solução implementada utiliza a biblioteca LangChain para orquestração, FAISS para armazenamento vetorial eficiente, e foi testada com dois modelos da OpenAI (GPT-4o e GPT-3.5-turbo) com funcionalidade de comparação lado a lado para avaliação de desempenho. A interface web foi desenvolvida em Streamlit, proporcionando uma experiência de usuário intuitiva e acessível, com recursos de busca complementar na internet via DuckDuckGo. O sistema demonstra eficácia na recuperação de informações relevantes e na geração de respostas contextualizadas, contribuindo para a redução de erros no preenchimento de documentos regulatórios e para o aumento da produtividade dos profissionais envolvidos.
 
 ### Abstract
 
-This work presents the development of an intelligent agent based on Retrieval Augmented Generation (RAG) techniques to assist financial sector professionals in filling out and understanding the SCR 3040 document from the Central Bank of Brazil. The system processes multiple document formats (PDF, XLS, and XML), using semantic embeddings and large language models (LLM) to provide accurate and contextualized answers about the document's structure, XML tags, attributes, and filling rules. The implemented solution uses the LangChain library for orchestration, FAISS for efficient vector storage, and OpenAI's GPT-4o-mini as the language model. The web interface was developed in Streamlit, providing an intuitive and accessible user experience. The system demonstrates effectiveness in retrieving relevant information and generating contextualized responses, contributing to the reduction of errors in filling regulatory documents and increasing the productivity of involved professionals.
+This work presents the development of an intelligent agent based on Retrieval Augmented Generation (RAG) techniques to assist financial sector professionals in filling out and understanding the SCR 3040 document from the Central Bank of Brazil. The system processes multiple document formats (PDF, XLS, and XML), using semantic embeddings and large language models (LLM) to provide accurate and contextualized answers about the document's structure, XML tags, attributes, and filling rules. The implemented solution uses the LangChain library for orchestration, FAISS for efficient vector storage, and was tested with two OpenAI language models (GPT-4o and GPT-3.5-turbo) with side-by-side comparison functionality for performance evaluation. The web interface was developed in Streamlit, providing an intuitive and accessible user experience, with complementary internet search capabilities via DuckDuckGo. The system demonstrates effectiveness in retrieving relevant information and generating contextualized responses, contributing to the reduction of errors in filling regulatory documents and increasing the productivity of involved professionals.
 
 ### 1. Introdução
 
@@ -48,15 +48,23 @@ Os chunks de texto são convertidos em embeddings utilizando OpenAIEmbeddings (t
 
 **2.3 Geração de Respostas**
 
-O modelo GPT-4o-mini da OpenAI é utilizado como LLM, configurado com temperatura de 0.1 para respostas mais determinísticas e precisas em contexto técnico. O sistema implementa ConversationalRetrievalChain do LangChain, que mantém histórico de conversação através de ConversationBufferMemory, permitindo que o agente compreenda o contexto de perguntas anteriores e forneça respostas mais coerentes.
+O sistema foi testado com dois modelos de linguagem da OpenAI, permitindo comparação direta de desempenho:
+- **GPT-3.5-turbo**: Modelo balanceado entre velocidade e custo, adequado para consultas simples
+- **GPT-4o**: Modelo mais avançado e preciso, com melhor compreensão de contexto complexo
+
+Ambos os modelos são configurados com temperatura de 0.1 para respostas mais determinísticas e precisas em contexto técnico. O sistema implementa ConversationalRetrievalChain do LangChain, que mantém histórico de conversação através de ConversationBufferMemory, permitindo que o agente compreenda o contexto de perguntas anteriores e forneça respostas mais coerentes. A interface permite comparação lado a lado entre os modelos, facilitando a avaliação de desempenho, qualidade das respostas e custo-benefício.
 
 **2.4 Interface do Usuário**
 
 A interface web foi desenvolvida em Streamlit, proporcionando:
 - Chat interativo com histórico de conversação
+- Seleção de modelo de linguagem (GPT-4o e GPT-3.5-turbo)
+- Modo de comparação lado a lado entre modelos para avaliação de desempenho
 - Processamento assíncrono com indicadores de carregamento
 - Cache inteligente do vectorstore para melhor performance
+- Busca complementar na internet via DuckDuckGo para informações adicionais
 - Opções para limpar histórico e recriar o índice vetorial
+- Métricas de comparação entre modelos (tamanho de resposta, sucesso, etc.)
 
 ### 3. Resultados
 
@@ -76,30 +84,72 @@ O sistema foi validado através de perguntas sobre estrutura XML, atributos obri
 
 
 ### Exemplos de uso do agente SCR 3040
-### Rodando o Código
-![Rodando o Código](agente/imagem/1_Rodando_codigo.png)
-### Interface principal
-![Interface principal](agente/imagem/interface_principal.png)
-### Perguntas ao Agente a respeito do tema 3040
-![Pergunta1](agente/imagem/tela1_oque_e.png)
 
-![Pergunta2](agente/imagem/tela2_mais_detalhe.png)
+#### Interface principal
+![Interface principal do agente SCR 3040](agente/imagem/user__screen.jpeg)
 
-![Pergunta3](agente/imagem/3_pergunta.png)
+#### Perguntas ao Agente a respeito do tema 3040
+**Exemplo 1: Pergunta sobre IPOC**
+![Pergunta sobre IPOC](agente/imagem/ipoc.jpeg)
 
-![Pergunta4](agente/imagem/4_pergunta.png)
+**Exemplo 2: Pergunta sobre tag OP**
+![Pergunta sobre tag OP](agente/imagem/tag_op.jpeg)
 
-![Pergunta5](agente/imagem/5_pergunta.png)
+**Exemplo 3: Explicação detalhada do SCR 3040**
+![Explicação detalhada do SCR 3040](agente/imagem/explicacao_3040.png)
+
+**Exemplo 4: Pergunta sobre modalidades**
+![Pergunta sobre modalidades](agente/imagem/modaldiades.png)
+
+
+
+
 
 ### 4. Conclusões
 
 Este trabalho apresentou o desenvolvimento de um agente inteligente baseado em RAG para suporte ao preenchimento do documento SCR 3040 do Banco Central do Brasil. A solução demonstra a viabilidade de utilizar técnicas de NLP e recuperação de informação para auxiliar profissionais em tarefas complexas de conformidade regulatória.
 
-Os principais contributos deste trabalho incluem: (1) processamento integrado de múltiplos formatos de documentos (PDF, XLS, XML), (2) implementação eficiente de RAG utilizando tecnologias state-of-the-art, (3) interface web acessível e intuitiva, e (4) validação prática da solução com documentos reais do Banco Central.
+Os principais contributos deste trabalho incluem: (1) processamento integrado de múltiplos formatos de documentos (PDF, XLS, XML), (2) implementação eficiente de RAG utilizando tecnologias state-of-the-art, (3) interface web acessível e intuitiva com suporte a dois modelos (GPT-4o e GPT-3.5-turbo), (4) funcionalidade de comparação entre modelos para avaliação de desempenho e custo-benefício, e (5) validação prática da solução com documentos reais do Banco Central, incluindo análise comparativa dos modelos testados.
 
-Como trabalhos futuros, sugere-se: (1) expansão para outros documentos do SCR, (2) implementação de validação automática de XML gerado, (3) integração com sistemas de gestão de documentos, (4) avaliação quantitativa da precisão das respostas, e (5) implementação de feedback do usuário para melhoria contínua do sistema.
+#### 4.1 Comparação de Modelos
 
-A solução desenvolvida contribui para a redução de erros no preenchimento de documentos regulatórios, aumento da produtividade dos profissionais e melhoria da conformidade com as exigências do Banco Central do Brasil.
+Durante o desenvolvimento e testes do sistema, foram avaliados dois modelos de linguagem da OpenAI, permitindo uma comparação direta de desempenho, custo e qualidade das respostas:
+
+| Modelo | Velocidade | Custo | Precisão | Qualidade das Respostas | Uso Recomendado |
+|-------|-----------|-------|----------|------------------------|-----------------|
+| **GPT-3.5-turbo** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | Consultas simples, orçamento limitado |
+| **GPT-4o** | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Consultas complexas, máxima precisão |
+
+**Principais Observações:**
+
+1. **GPT-3.5-turbo**: 
+   - Demonstrou bom desempenho em consultas diretas e objetivas sobre o SCR 3040
+   - Respostas mais rápidas e com custo significativamente menor
+   - Ocasionalmente perdeu nuances em perguntas mais complexas sobre estrutura XML, atributos e regras de validação inter-relacionadas
+   - Respostas mais concisas, às vezes menos detalhadas para casos de uso complexos
+   - Ideal para desenvolvimento, testes iniciais e consultas de rotina com orçamento limitado
+
+2. **GPT-4o**: 
+   - Mostrou superioridade clara em compreensão de contexto complexo e geração de respostas mais detalhadas e precisas
+   - Particularmente eficaz em perguntas que requerem análise de múltiplos atributos XML, hierarquia de tags e regras de negócio inter-relacionadas
+   - Melhor capacidade de síntese de informações de múltiplos documentos (PDF, XLS, XML)
+   - Respostas mais completas e contextualizadas, com melhor explicação de conceitos técnicos
+   - Maior capacidade de inferência e conexão entre diferentes partes do documento SCR 3040
+   - Custo mais elevado, mas justificado para consultas críticas que exigem máxima precisão
+
+**Recomendação Final:**
+
+Com base nos testes realizados, recomenda-se o uso do **GPT-4o** para consultas sobre o documento SCR 3040, especialmente considerando a complexidade técnica e a necessidade de precisão em documentos regulatórios. O modelo demonstrou capacidade superior em:
+- Compreender e explicar a estrutura hierárquica XML do documento
+- Conectar informações de diferentes fontes (instruções PDF, leiaute XLS e exemplo XML)
+- Fornecer respostas mais completas e contextualizadas sobre regras de preenchimento
+- Analisar relações entre atributos obrigatórios e validações
+
+O **GPT-3.5-turbo** pode ser utilizado como alternativa mais econômica para consultas simples e diretas, mas com limitações em casos que exigem análise profunda ou compreensão de contexto complexo.
+
+A funcionalidade de comparação lado a lado implementada na interface permitiu avaliar empiricamente as diferenças entre os modelos, facilitando a tomada de decisão baseada em dados reais e demonstrando claramente a superioridade do GPT-4o para este caso de uso específico.
+
+
 
 ---
 

@@ -1,0 +1,214 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Agente SCR 3040 - Documentação</title>
+        
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #95a5a6;
+            padding-bottom: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        img {
+            max-width: 100% !important;
+            height: auto !important;
+            width: auto !important;
+            max-height: 600px !important;
+            display: block;
+            margin: 20px auto;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        p img, div img {
+            max-width: 100% !important;
+            height: auto !important;
+            page-break-inside: avoid;
+        }
+        figure {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            margin: 20px 0;
+        }
+    </style>
+    
+    </head>
+    <body>
+        <h1>Agente Inteligente para Suporte ao Preenchimento do Documento SCR 3040 do Banco Central do Brasil</h1>
+<h4>Aluno: <a href="https://github.com/gdperezr">Gabriel Diniz Perez Rocha</a></h4>
+<h4>Orientadora: [Evelyn].</h4>
+<hr />
+<p>Trabalho apresentado ao curso <a href="https://ica.puc-rio.ai/bi-master">BI MASTER</a> como pré-requisito para conclusão de curso.</p>
+<ul>
+<li><a href="agente/app_melhorado.py">Link para o código</a></li>
+<li><a href="https://github.com/gdperezr/regulatory_agent">Link para o código Github</a></li>
+</ul>
+<hr />
+<h3>Resumo</h3>
+<p>Este trabalho apresenta o desenvolvimento de um agente inteligente baseado em técnicas de Retrieval Augmented Generation (RAG) para auxiliar profissionais do setor financeiro no preenchimento e compreensão do documento SCR 3040 do Banco Central do Brasil. O sistema processa múltiplos formatos de documentos (PDF, XLS e XML), utilizando embeddings semânticos e modelos de linguagem de grande escala (LLM) para fornecer respostas precisas e contextualizadas sobre a estrutura, tags XML, atributos e regras de preenchimento do documento. A solução implementada utiliza a biblioteca LangChain para orquestração, FAISS para armazenamento vetorial eficiente, e foi testada com dois modelos da OpenAI (GPT-4o e GPT-3.5-turbo) com funcionalidade de comparação lado a lado para avaliação de desempenho. A interface web foi desenvolvida em Streamlit, proporcionando uma experiência de usuário intuitiva e acessível, com recursos de busca complementar na internet via DuckDuckGo. O sistema demonstra eficácia na recuperação de informações relevantes e na geração de respostas contextualizadas, contribuindo para a redução de erros no preenchimento de documentos regulatórios e para o aumento da produtividade dos profissionais envolvidos.</p>
+<h3>Abstract</h3>
+<p>This work presents the development of an intelligent agent based on Retrieval Augmented Generation (RAG) techniques to assist financial sector professionals in filling out and understanding the SCR 3040 document from the Central Bank of Brazil. The system processes multiple document formats (PDF, XLS, and XML), using semantic embeddings and large language models (LLM) to provide accurate and contextualized answers about the document's structure, XML tags, attributes, and filling rules. The implemented solution uses the LangChain library for orchestration, FAISS for efficient vector storage, and was tested with two OpenAI language models (GPT-4o and GPT-3.5-turbo) with side-by-side comparison functionality for performance evaluation. The web interface was developed in Streamlit, providing an intuitive and accessible user experience, with complementary internet search capabilities via DuckDuckGo. The system demonstrates effectiveness in retrieving relevant information and generating contextualized responses, contributing to the reduction of errors in filling regulatory documents and increasing the productivity of involved professionals.</p>
+<h3>1. Introdução</h3>
+<p>O Sistema de Controle de Riscos (SCR) do Banco Central do Brasil exige que instituições financeiras enviem periodicamente documentos padronizados com informações detalhadas sobre suas operações. O documento SCR 3040, em particular, apresenta complexidade significativa devido à sua estrutura hierárquica em XML, múltiplos atributos obrigatórios e regras específicas de preenchimento. Profissionais do setor financeiro frequentemente enfrentam dificuldades para compreender a estrutura completa do documento, identificar os atributos corretos para cada tag XML e garantir a conformidade com as instruções do Banco Central.</p>
+<p>Este trabalho propõe o desenvolvimento de um agente inteligente que utiliza técnicas de Processamento de Linguagem Natural (NLP) e Recuperação de Informação para auxiliar no preenchimento correto do documento SCR 3040. A solução baseia-se na arquitetura RAG (Retrieval Augmented Generation), que combina recuperação de informações relevantes de uma base de conhecimento com geração de respostas contextualizadas por modelos de linguagem de grande escala.</p>
+<p>O agente processa três tipos de documentos: (1) PDF com instruções de preenchimento, (2) planilha XLS com o leiaute detalhado do documento, e (3) arquivo XML de exemplo contendo a estrutura completa com tags e atributos. Através de embeddings semânticos, o sistema cria uma representação vetorial dos documentos que permite busca eficiente por similaridade. Quando um usuário faz uma pergunta, o sistema recupera os trechos mais relevantes e utiliza um modelo de linguagem para gerar uma resposta precisa e contextualizada.</p>
+<h3>2. Modelagem</h3>
+<p>A arquitetura do sistema é baseada em RAG (Retrieval Augmented Generation), composta por três componentes principais: ingestão e processamento de documentos, armazenamento vetorial e recuperação de informações, e geração de respostas contextualizadas.</p>
+<p><strong>2.1 Ingestão e Processamento de Documentos</strong></p>
+<p>O sistema processa três tipos de documentos:
+- <strong>PDF</strong>: Contém as instruções oficiais de preenchimento do Banco Central, extraídas utilizando PyPDFLoader do LangChain
+- <strong>XLS</strong>: Planilha com o leiaute detalhado do documento, processada via UnstructuredExcelLoader
+- <strong>XML</strong>: Arquivo de exemplo com a estrutura completa, processado através de parsing XML customizado que extrai tags, atributos e hierarquia</p>
+<p>Os documentos são divididos em chunks de 1500 caracteres com overlap de 200 caracteres utilizando RecursiveCharacterTextSplitter, garantindo que informações importantes não sejam fragmentadas entre chunks.</p>
+<p><strong>2.2 Armazenamento Vetorial e Recuperação</strong></p>
+<p>Os chunks de texto são convertidos em embeddings utilizando OpenAIEmbeddings (text-embedding-ada-002) e armazenados em um índice FAISS (Facebook AI Similarity Search) para busca eficiente por similaridade. O sistema utiliza busca MMR (Maximum Marginal Relevance) com k=5 documentos relevantes, fetch_k=10 candidatos e lambda_mult=0.7, balanceando relevância e diversidade dos resultados recuperados.</p>
+<p><strong>2.3 Geração de Respostas</strong></p>
+<p>O sistema foi testado com dois modelos de linguagem da OpenAI, permitindo comparação direta de desempenho:
+- <strong>GPT-3.5-turbo</strong>: Modelo balanceado entre velocidade e custo, adequado para consultas simples
+- <strong>GPT-4o</strong>: Modelo mais avançado e preciso, com melhor compreensão de contexto complexo</p>
+<p>Ambos os modelos são configurados com temperatura de 0.1 para respostas mais determinísticas e precisas em contexto técnico. O sistema implementa ConversationalRetrievalChain do LangChain, que mantém histórico de conversação através de ConversationBufferMemory, permitindo que o agente compreenda o contexto de perguntas anteriores e forneça respostas mais coerentes. A interface permite comparação lado a lado entre os modelos, facilitando a avaliação de desempenho, qualidade das respostas e custo-benefício.</p>
+<p><strong>2.4 Interface do Usuário</strong></p>
+<p>A interface web foi desenvolvida em Streamlit, proporcionando:
+- Chat interativo com histórico de conversação
+- Seleção de modelo de linguagem (GPT-4o e GPT-3.5-turbo)
+- Modo de comparação lado a lado entre modelos para avaliação de desempenho
+- Processamento assíncrono com indicadores de carregamento
+- Cache inteligente do vectorstore para melhor performance
+- Busca complementar na internet via DuckDuckGo para informações adicionais
+- Opções para limpar histórico e recriar o índice vetorial
+- Métricas de comparação entre modelos (tamanho de resposta, sucesso, etc.)</p>
+<h3>3. Resultados</h3>
+<p>O sistema foi implementado e testado com sucesso, demonstrando capacidade de:</p>
+<ol>
+<li>
+<p><strong>Processamento Multi-formato</strong>: O agente processa eficientemente documentos em PDF, XLS e XML, extraindo informações estruturadas e não estruturadas.</p>
+</li>
+<li>
+<p><strong>Recuperação Semântica</strong>: A busca por similaridade utilizando embeddings permite encontrar informações relevantes mesmo quando o usuário utiliza termos diferentes dos presentes nos documentos originais.</p>
+</li>
+<li>
+<p><strong>Respostas Contextualizadas</strong>: O modelo de linguagem gera respostas precisas baseadas no contexto recuperado, mantendo coerência com o histórico da conversação.</p>
+</li>
+<li>
+<p><strong>Interface Intuitiva</strong>: A interface Streamlit proporciona experiência de usuário fluida, com feedback visual adequado durante o processamento.</p>
+</li>
+<li>
+<p><strong>Performance</strong>: O cache do vectorstore e a otimização da busca MMR garantem tempos de resposta adequados mesmo com grandes volumes de documentos.</p>
+</li>
+</ol>
+<p>O sistema foi validado através de perguntas sobre estrutura XML, atributos obrigatórios, regras de preenchimento e exemplos práticos, demonstrando capacidade de fornecer informações precisas e úteis para profissionais do setor financeiro.</p>
+<h3>Exemplos de uso do agente SCR 3040</h3>
+<h4>Interface principal</h4>
+<p><img alt="Interface principal do agente SCR 3040" src="agente/imagem/user__screen.jpeg" /></p>
+<h4>Perguntas ao Agente a respeito do tema 3040</h4>
+<p><strong>Exemplo 1: Pergunta sobre IPOC</strong>
+<img alt="Pergunta sobre IPOC" src="agente/imagem/ipoc.jpeg" /></p>
+<p><strong>Exemplo 2: Pergunta sobre tag OP</strong>
+<img alt="Pergunta sobre tag OP" src="agente/imagem/tag_op.jpeg" /></p>
+<p><strong>Exemplo 3: Explicação detalhada do SCR 3040</strong>
+<img alt="Explicação detalhada do SCR 3040" src="agente/imagem/explicacao_3040.png" /></p>
+<p><strong>Exemplo 4: Pergunta sobre modalidades</strong>
+<img alt="Pergunta sobre modalidades" src="agente/imagem/modaldiades.png" /></p>
+<h3>4. Conclusões</h3>
+<p>Este trabalho apresentou o desenvolvimento de um agente inteligente baseado em RAG para suporte ao preenchimento do documento SCR 3040 do Banco Central do Brasil. A solução demonstra a viabilidade de utilizar técnicas de NLP e recuperação de informação para auxiliar profissionais em tarefas complexas de conformidade regulatória.</p>
+<p>Os principais contributos deste trabalho incluem: (1) processamento integrado de múltiplos formatos de documentos (PDF, XLS, XML), (2) implementação eficiente de RAG utilizando tecnologias state-of-the-art, (3) interface web acessível e intuitiva com suporte a dois modelos (GPT-4o e GPT-3.5-turbo), (4) funcionalidade de comparação entre modelos para avaliação de desempenho e custo-benefício, e (5) validação prática da solução com documentos reais do Banco Central, incluindo análise comparativa dos modelos testados.</p>
+<h4>4.1 Comparação de Modelos</h4>
+<p>Durante o desenvolvimento e testes do sistema, foram avaliados dois modelos de linguagem da OpenAI, permitindo uma comparação direta de desempenho, custo e qualidade das respostas:</p>
+<table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th>Velocidade</th>
+<th>Custo</th>
+<th>Precisão</th>
+<th>Qualidade das Respostas</th>
+<th>Uso Recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPT-3.5-turbo</strong></td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>Consultas simples, orçamento limitado</td>
+</tr>
+<tr>
+<td><strong>GPT-4o</strong></td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>Consultas complexas, máxima precisão</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Principais Observações:</strong></p>
+<ol>
+<li><strong>GPT-3.5-turbo</strong>: </li>
+<li>Demonstrou bom desempenho em consultas diretas e objetivas sobre o SCR 3040</li>
+<li>Respostas mais rápidas e com custo significativamente menor</li>
+<li>Ocasionalmente perdeu nuances em perguntas mais complexas sobre estrutura XML, atributos e regras de validação inter-relacionadas</li>
+<li>Respostas mais concisas, às vezes menos detalhadas para casos de uso complexos</li>
+<li>
+<p>Ideal para desenvolvimento, testes iniciais e consultas de rotina com orçamento limitado</p>
+</li>
+<li>
+<p><strong>GPT-4o</strong>: </p>
+</li>
+<li>Mostrou superioridade clara em compreensão de contexto complexo e geração de respostas mais detalhadas e precisas</li>
+<li>Particularmente eficaz em perguntas que requerem análise de múltiplos atributos XML, hierarquia de tags e regras de negócio inter-relacionadas</li>
+<li>Melhor capacidade de síntese de informações de múltiplos documentos (PDF, XLS, XML)</li>
+<li>Respostas mais completas e contextualizadas, com melhor explicação de conceitos técnicos</li>
+<li>Maior capacidade de inferência e conexão entre diferentes partes do documento SCR 3040</li>
+<li>Custo mais elevado, mas justificado para consultas críticas que exigem máxima precisão</li>
+</ol>
+<p><strong>Recomendação Final:</strong></p>
+<p>Com base nos testes realizados, recomenda-se o uso do <strong>GPT-4o</strong> para consultas sobre o documento SCR 3040, especialmente considerando a complexidade técnica e a necessidade de precisão em documentos regulatórios. O modelo demonstrou capacidade superior em:
+- Compreender e explicar a estrutura hierárquica XML do documento
+- Conectar informações de diferentes fontes (instruções PDF, leiaute XLS e exemplo XML)
+- Fornecer respostas mais completas e contextualizadas sobre regras de preenchimento
+- Analisar relações entre atributos obrigatórios e validações</p>
+<p>O <strong>GPT-3.5-turbo</strong> pode ser utilizado como alternativa mais econômica para consultas simples e diretas, mas com limitações em casos que exigem análise profunda ou compreensão de contexto complexo.</p>
+<p>A funcionalidade de comparação lado a lado implementada na interface permitiu avaliar empiricamente as diferenças entre os modelos, facilitando a tomada de decisão baseada em dados reais e demonstrando claramente a superioridade do GPT-4o para este caso de uso específico.</p>
+<hr />
+<p>Matrícula: [231100995]</p>
+<p>Pontifícia Universidade Católica do Rio de Janeiro</p>
+<p>Curso de Pós Graduação <em>Business Intelligence Master</em></p>
+    </body>
+    </html>
+    

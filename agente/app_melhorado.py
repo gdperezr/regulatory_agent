@@ -34,6 +34,7 @@ if not OPENAI_API_KEY:
 BASE_DIR = Path(__file__).parent
 PDF_PATH = BASE_DIR / "SCR_InstrucoesDePreenchimento_Doc3040.pdf"
 XLS_PATH = BASE_DIR / "SCR3040_Leiaute.xls"
+XLS_CRITICAS_PATH = BASE_DIR / "SCR3040_Criticas.xls"
 XML_PATH = BASE_DIR / "simulacao_3040.xml"
 VECTORSTORE_PATH = BASE_DIR / "vectorstore"
 
@@ -52,6 +53,9 @@ if "memory" not in st.session_state:
         return_messages=True,
         output_key="answer"
     )
+# Memórias separadas para cada modelo (para comparação)
+if "memories_modelos" not in st.session_state:
+    st.session_state.memories_modelos = {}
 
 @st.cache_resource
 def carregar_vectorstore():
@@ -105,6 +109,14 @@ def carregar_vectorstore():
         loader_xls = UnstructuredExcelLoader(str(XLS_PATH))
         docs_xls = loader_xls.load()
         
+        # Carrega arquivo XLS de Críticas
+        if XLS_CRITICAS_PATH.exists():
+            loader_xls_criticas = UnstructuredExcelLoader(str(XLS_CRITICAS_PATH))
+            docs_xls_criticas = loader_xls_criticas.load()
+        else:
+            st.warning(f"⚠️ Arquivo de críticas não encontrado: {XLS_CRITICAS_PATH}. Continuando sem ele...")
+            docs_xls_criticas = []
+        
         # Carrega XML
         if not XML_PATH.exists():
             st.error(f"❌ Arquivo XML não encontrado: {XML_PATH}")
@@ -152,14 +164,16 @@ def carregar_vectorstore():
             )]
         
         # Junta todos os documentos
-        docs = docs_pdf + docs_xls + docs_xml
+        docs = docs_pdf + docs_xls + docs_xls_criticas + docs_xml
         
         # Adiciona metadados aos documentos
         for i, doc in enumerate(docs):
             if i < len(docs_pdf):
                 doc.metadata["source"] = "PDF"
             elif i < len(docs_pdf) + len(docs_xls):
-                doc.metadata["source"] = "XLS"
+                doc.metadata["source"] = "XLS_Leiaute"
+            elif i < len(docs_pdf) + len(docs_xls) + len(docs_xls_criticas):
+                doc.metadata["source"] = "XLS_Criticas"
             else:
                 doc.metadata["source"] = "XML"
             doc.metadata["doc_id"] = i
@@ -184,8 +198,31 @@ def carregar_vectorstore():
         
         return vectorstore
 
-@st.cache_resource
-def criar_agente(_vectorstore, _memory):
+# Modelos disponíveis
+MODELOS_DISPONIVEIS = {
+    "GPT-4o-mini": {
+        "nome": "gpt-4o-mini",
+        "descricao": "Modelo mais rápido e econômico",
+        "custo": "Baixo"
+    },
+    "GPT-3.5-turbo": {
+        "nome": "gpt-3.5-turbo",
+        "descricao": "Modelo balanceado (velocidade/custo)",
+        "custo": "Muito Baixo"
+    },
+    "GPT-4o": {
+        "nome": "gpt-4o",
+        "descricao": "Modelo mais avançado e preciso",
+        "custo": "Alto"
+    },
+    "GPT-4-turbo": {
+        "nome": "gpt-4-turbo",
+        "descricao": "Modelo GPT-4 otimizado",
+        "custo": "Alto"
+    }
+}
+
+def criar_agente(_vectorstore, _memory, model_name="gpt-4o-mini"):
     """Cria o agente RAG com configurações otimizadas"""
     
     # Prompt template melhorado
@@ -223,7 +260,7 @@ Resposta detalhada e precisa:"""
     
     
     llm = ChatOpenAI(
-        model_name="gpt-4o-mini", 
+        model_name=model_name, 
         temperature=0.1,  
         max_tokens=2000
     )
@@ -245,10 +282,36 @@ st.markdown("**Assistente especializado** em ajudar com o preenchimento e estrut
 
 with st.sidebar:
     st.header("⚙️ Configurações")
+    
+    # Seletor de modelo
+    st.markdown("### 🤖 Seleção de Modelo")
+    modelo_selecionado = st.selectbox(
+        "Escolha o modelo:",
+        options=list(MODELOS_DISPONIVEIS.keys()),
+        index=0,
+        help="Selecione o modelo de linguagem para gerar as respostas"
+    )
+    
+    # Informações do modelo selecionado
+    modelo_info = MODELOS_DISPONIVEIS[modelo_selecionado]
+    st.caption(f"💡 {modelo_info['descricao']} | 💰 Custo: {modelo_info['custo']}")
+    
+    # Opção de comparar modelos (melhor vs pior)
+    st.markdown("---")
+    comparar_modelos = st.checkbox(
+        "🔄 Comparar melhor vs pior modelo",
+        help="Compare GPT-4o (melhor) com GPT-3.5-turbo (mais econômico)"
+    )
+    
+    if comparar_modelos:
+        modelos_para_comparar = ["GPT-4o", "GPT-3.5-turbo"]
+    else:
+        modelos_para_comparar = [modelo_selecionado]
   
     if st.button("🗑️ Limpar Histórico"):
         st.session_state.messages = []
         st.session_state.memory.clear()
+        st.session_state.memories_modelos = {}
         st.rerun()
     
     if st.button("🔄 Recriar Vectorstore"):
@@ -261,11 +324,17 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("### 📊 Informações")
-    st.info("""
-    **Modelo:** GPT-4o-mini  
+    st.info(f"""
+    **Modelo Atual:** {modelo_selecionado}  
     **Técnica:** RAG (Retrieval Augmented Generation)  
     **Vectorstore:** FAISS com MMR  
     **Cache:** Ativado
+    
+    **Documentos incluídos:**
+    - PDF: Instruções de Preenchimento
+    - XLS: Leiaute do Documento
+    - XLS: Críticas e Validações
+    - XML: Exemplo de Estrutura
     """)
     
  
@@ -290,50 +359,131 @@ if pergunta := st.chat_input("✍️ Faça sua pergunta sobre o SCR 3040:"):
     with st.chat_message("user"):
         st.markdown(pergunta)
     
-    with st.chat_message("assistant"):
-        with st.spinner("🤔 Analisando documentos e gerando resposta..."):
-            try:
-             
-                agente = criar_agente(vectorstore, st.session_state.memory)
-                
-           
-                resultado = agente.invoke({"question": pergunta})
-                resposta = resultado["answer"]
-                documentos_fonte = resultado.get("source_documents", [])
-                
-   
-                st.markdown(resposta)
-                
+    # Processa com os modelos selecionados
+    respostas_modelos = {}
+    
+    if len(modelos_para_comparar) == 1:
+        # Modo simples: um modelo
+        modelo_nome = modelos_para_comparar[0]
+        modelo_key = MODELOS_DISPONIVEIS[modelo_nome]["nome"]
+        
+        with st.chat_message("assistant"):
+            with st.spinner(f"🤔 Analisando com {modelo_nome}..."):
                 try:
-                    search = DuckDuckGoSearchRun()
-                    resultado_web = search.run(f"SCR 3040 Banco Central {pergunta}")
-                    
-                    if resultado_web and len(resultado_web.strip()) > 0:
-                        with st.expander("🌐 Informação complementar da internet"):
-                            st.write(resultado_web)
-                except Exception as e:
-                    # Trata rate limit e outros erros silenciosamente
-                    error_msg = str(e).lower()
-                    if "ratelimit" in error_msg or "rate limit" in error_msg or "202" in str(e):
-                        # Rate limit - não mostra erro, apenas não exibe a busca
-                        pass
+                    # Usa memória compartilhada ou cria uma específica
+                    if modelo_nome in st.session_state.memories_modelos:
+                        memoria_modelo = st.session_state.memories_modelos[modelo_nome]
                     else:
-                        # Outros erros - mostra apenas se for algo crítico
+                        memoria_modelo = ConversationBufferMemory(
+                            memory_key="chat_history",
+                            return_messages=True,
+                            output_key="answer"
+                        )
+                        st.session_state.memories_modelos[modelo_nome] = memoria_modelo
+                    
+                    agente = criar_agente(vectorstore, memoria_modelo, model_name=modelo_key)
+                    resultado = agente.invoke({"question": pergunta})
+                    resposta = resultado["answer"]
+                    documentos_fonte = resultado.get("source_documents", [])
+                    
+                    st.markdown(resposta)
+                    
+                    # Busca complementar na internet
+                    try:
+                        search = DuckDuckGoSearchRun()
+                        resultado_web = search.run(f"SCR 3040 Banco Central {pergunta}")
+                        if resultado_web and len(resultado_web.strip()) > 0:
+                            with st.expander("🌐 Informação complementar da internet"):
+                                st.write(resultado_web)
+                    except:
                         pass
+                    
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": resposta,
+                        "modelo": modelo_nome,
+                        "sources": documentos_fonte
+                    })
+                    
+                except Exception as e:
+                    erro_msg = f"❌ Erro ao processar pergunta: {str(e)}"
+                    st.error(erro_msg)
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": erro_msg,
+                        "modelo": modelo_nome
+                    })
+    else:
+        # Modo comparação: melhor vs pior (2 modelos lado a lado)
+        st.markdown("### 🔄 Comparação: Melhor vs Mais Econômico")
+        
+        col1, col2 = st.columns(2)
+        respostas_modelos = {}
+        
+        for idx, modelo_nome in enumerate(modelos_para_comparar):
+            modelo_key = MODELOS_DISPONIVEIS[modelo_nome]["nome"]
+            col = col1 if idx == 0 else col2
+            
+            with col:
+                st.markdown(f"#### 🤖 {modelo_nome}")
+                st.caption(f"{MODELOS_DISPONIVEIS[modelo_nome]['descricao']} | 💰 {MODELOS_DISPONIVEIS[modelo_nome]['custo']}")
                 
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": resposta,
-                    "sources": documentos_fonte
-                })
-                
-            except Exception as e:
-                erro_msg = f"❌ Erro ao processar pergunta: {str(e)}"
-                st.error(erro_msg)
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": erro_msg
-                })
+                with st.spinner(f"Processando {modelo_nome}..."):
+                    try:
+                        # Usa ou cria memória específica para cada modelo
+                        if modelo_nome in st.session_state.memories_modelos:
+                            memoria_modelo = st.session_state.memories_modelos[modelo_nome]
+                        else:
+                            memoria_modelo = ConversationBufferMemory(
+                                memory_key="chat_history",
+                                return_messages=True,
+                                output_key="answer"
+                            )
+                            st.session_state.memories_modelos[modelo_nome] = memoria_modelo
+                        
+                        agente = criar_agente(vectorstore, memoria_modelo, model_name=modelo_key)
+                        resultado = agente.invoke({"question": pergunta})
+                        resposta = resultado["answer"]
+                        documentos_fonte = resultado.get("source_documents", [])
+                        
+                        respostas_modelos[modelo_nome] = resposta
+                        
+                        st.markdown("**Resposta:**")
+                        st.markdown(resposta)
+                        
+                        # Informações adicionais (sem expander)
+                        st.caption(f"📄 Documentos utilizados: {len(documentos_fonte)}")
+                        
+                    except Exception as e:
+                        erro_msg = f"❌ Erro: {str(e)}"
+                        st.error(erro_msg)
+                        respostas_modelos[modelo_nome] = erro_msg
+        
+        # Resumo comparativo simples
+        if len(respostas_modelos) == 2:
+            st.markdown("---")
+            st.markdown("### 📊 Comparação Rápida")
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                comprimentos = [len(r) for r in respostas_modelos.values() if isinstance(r, str) and not r.startswith("❌")]
+                if comprimentos:
+                    st.metric("Tamanho Médio", f"{sum(comprimentos)//len(comprimentos)} chars")
+            with col2:
+                modelos_sucesso = [m for m, r in respostas_modelos.items() if isinstance(r, str) and not r.startswith("❌")]
+                st.metric("Modelos com Sucesso", len(modelos_sucesso))
+            with col3:
+                if len(modelos_sucesso) == 2:
+                    melhor = max(modelos_para_comparar, key=lambda m: len(respostas_modelos.get(m, "")))
+                    st.metric("Resposta Mais Detalhada", melhor)
+        
+        # Salva todas as respostas no histórico
+        for modelo_nome, resposta in respostas_modelos.items():
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": resposta,
+                "modelo": modelo_nome
+            })
 
 
 
